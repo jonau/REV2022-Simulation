@@ -45,9 +45,9 @@ class ErrorModelSimulationEnvironment(DistributedModelSimulationEnvironment):
         event.full_state=sending_node.full_state
         if sending_node != receiving_node:
             # Bandwidth need for the variable
-            self.full_state_statistics_active_time_step.band_width_used+=1+(self.number_of_variables.bit_length()-1)
+            self.full_state_statistics_active_time_step.band_width_used+=1+(self.number_of_variables.bit_length()-1) # Todo: Check if the -1 is correct
             # Bandwidth for the full state transfer
-            self.full_state_statistics_active_time_step.band_width_used+=len(sending_node.full_state)*(self.number_of_variables.bit_length()-1)
+            self.full_state_statistics_active_time_step.band_width_used+=len(sending_node.full_state)*(self.number_of_variables.bit_length()-1) # Todo: Redo the calculation correctly
         
         return event
 

@@ -21,7 +21,7 @@ def get_random_parameters(max_number_of_nodes: int, max_number_of_variables_per_
     """
     Randomly generates a simulation parameters object
     """
-    number_of_nodes = random.randint(1, max_number_of_nodes)
+    number_of_nodes = random.randint(2, max_number_of_nodes)
     number_of_variables_per_node = [random.randint(1, max_number_of_variables_per_node) for i in range(number_of_nodes)]
     number_of_variables = sum(number_of_variables_per_node)
     number_of_dependencied_per_node = [random.randint(1, min(max_number_of_dependencies_per_node, number_of_variables))
