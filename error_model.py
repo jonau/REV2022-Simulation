@@ -104,29 +104,30 @@ class ErrorModelSimulationEnvironment(DistributedModelSimulationEnvironment):
             node.full_state = set()
             for state in itertools.chain([node.local_state],*node.full_state_dict.values()):
                 node.full_state.add(State(state).overwrite(global_sub_state))
-            error_check = [state in self.fault_space for state in node.full_state]
-            if all(error_check):
-                self.full_state_statistics_active_time_step.error_detected = True
 
-            # Timestamp 
-            if node.local_state.int_representation in self.fault_space:
-                wait_time = 0
-                for key in node.timestamp_dict.keys():
-                    wait_time += time - node.timestamp_dict[key]
-                self.timestamp_faults.append((node, node.local_state, wait_time))
-                for timestamp_fault in self.timestamp_faults:
-                    if timestamp_fault[0] == node and timestamp_fault[1] == node.local_state and timestamp_fault[2] == 0:
-                        self.timestamp_statistics_active_time_step.error_detected = True
-                        self.timestamp_faults.remove(timestamp_fault)
-            else:
-                for timestamp_fault in self.timestamp_faults:
-                    if timestamp_fault[0] == node:
-                        self.timestamp_faults.remove(timestamp_fault)
+        # Full State Transfer Error Check
+        error_check = [state in self.fault_space for state in node[0].full_state]
+        if all(error_check):
+            self.full_state_statistics_active_time_step.error_detected = True
 
+        # Timestamp Error Check
+        if node[0].local_state.int_representation in self.fault_space:
+            wait_time = 0
+            for key in node[0].timestamp_dict.keys():
+                wait_time += time - node[0].timestamp_dict[key]
+            self.timestamp_faults.append((node[0], node[0].local_state, wait_time))
             for timestamp_fault in self.timestamp_faults:
-                if timestamp_fault[0] == 0:
+                if timestamp_fault[0] == node[0] and timestamp_fault[1] == node[0].local_state and timestamp_fault[2] == 0:
+                    self.timestamp_statistics_active_time_step.error_detected = True
+                    self.timestamp_faults.remove(timestamp_fault)
+        else:
+            for timestamp_fault in self.timestamp_faults:
+                if timestamp_fault[0] == node[0]:
                     self.timestamp_faults.remove(timestamp_fault)
 
+        for timestamp_fault in self.timestamp_faults:
+            if timestamp_fault[0] == 0:
+                self.timestamp_faults.remove(timestamp_fault)
 
 
         super().handle_time_step(time, events_occured)
