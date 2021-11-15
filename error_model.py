@@ -108,23 +108,23 @@ class ErrorModelSimulationEnvironment(DistributedModelSimulationEnvironment):
                 node.full_state.add(State(state).overwrite(global_sub_state))
 
         # Full State Transfer Error Check
-        error_check = [state in self.fault_space for state in node[0].full_state]
+        error_check = [state in self.fault_space for state in self.nodes[0].full_state]
         if all(error_check):
             self.full_state_statistics_active_time_step.error_detected = True
 
         # Timestamp Error Check
-        if node[0].local_state.int_representation in self.fault_space:
+        if self.nodes[0].local_state.int_representation in self.fault_space:
             wait_time = 0
-            for key in node[0].timestamp_dict.keys():
-                wait_time += time - node[0].timestamp_dict[key]
-            self.timestamp_faults.append((node[0], node[0].local_state, wait_time))
+            for key in self.nodes[0].timestamp_dict.keys():
+                wait_time += time - self.nodes[0].timestamp_dict[key]
+            self.timestamp_faults.append((self.nodes[0], self.nodes[0].local_state, wait_time))
             for timestamp_fault in self.timestamp_faults:
-                if timestamp_fault[0] == node[0] and timestamp_fault[1] == node[0].local_state and timestamp_fault[2] == 0:
+                if timestamp_fault[0] == self.nodes[0] and timestamp_fault[1] == self.nodes[0].local_state and timestamp_fault[2] == 0:
                     self.timestamp_statistics_active_time_step.error_detected = True
                     self.timestamp_faults.remove(timestamp_fault)
         else:
             for timestamp_fault in self.timestamp_faults:
-                if timestamp_fault[0] == node[0]:
+                if timestamp_fault[0] == self.nodes[0]:
                     self.timestamp_faults.remove(timestamp_fault)
 
         for timestamp_fault in self.timestamp_faults:
