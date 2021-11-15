@@ -61,15 +61,17 @@ class ErrorModelSimulationEnvironment(DistributedModelSimulationEnvironment):
         event.full_state = sending_node.full_state
         if sending_node != receiving_node:
             # Bandwidth need for the variable
-            self.full_state_statistics_active_time_step.band_width_used += 1+(self.number_of_variables.bit_length()-1) # Todo: Check if the -1 is correct
+            # The variables need one bit to transmit the status and the number of bits necessary to represent the position of the variable
+            # Example: we have 8 varaibles: (number_of_variables-1).bit_length = 3 bits to represent the position - in total 4 bits of information
+            self.full_state_statistics_active_time_step.band_width_used += 1+(self.number_of_variables-1).bit_length()
             # Bandwidth for the full state transfer
-            self.full_state_statistics_active_time_step.band_width_used += len(sending_node.full_state)*(self.number_of_variables.bit_length()-1) # Todo: Redo the calculation correctly
-
+            # To transmit the set of state we need the number of states in the set len(sending_node.full_state), for which each state is encoded with number_of_variables bits to represent a full state vector
+            self.full_state_statistics_active_time_step.band_width_used += len(sending_node.full_state)*self.number_of_variables
         # Timestamps Data ######################################################
         event.timestamp = time
         if sending_node != receiving_node:
             # Bandwidth need for the variable
-            self.timestamp_statistics_active_time_step.band_width_used += 1+(self.number_of_variables.bit_length()-1) # Todo: Check if the -1 is correct
+            self.timestamp_statistics_active_time_step.band_width_used += 1+(self.number_of_variables-1).bit_length()
             # Bandwidth for the timestamp
             self.timestamp_statistics_active_time_step.band_width_used += 32
         
