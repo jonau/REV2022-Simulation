@@ -1,5 +1,6 @@
 import itertools
 import random
+from database import commit, insert_table, write_statistics
 from simulation_objects import RuleFunction, State
 from base_model import BaseModelSimulationEnvironment
 from distributed_model import DistributedModelSimulationEnvironment
@@ -47,6 +48,8 @@ for i in range(100):
     parameters = get_random_parameters(max_number_of_nodes, max_number_of_variables_per_node,
                                     max_number_of_dependencies_per_node)
 
+    simulation_reference=insert_table('simulation', cls=parameters)
+
     env = BaseModelSimulationEnvironment(parameters)
     env.run(stop_time)
     base_model_states=env.state_space
@@ -62,9 +65,11 @@ for i in range(100):
     # The Method should detect an error: false negative testing
     env = ErrorModelSimulationEnvironment(parameters, fault_space=control_fault_space.union(infrastructure_fault_space))
     env.run(stop_time)
-    # Todo: write out statistics
+    write_statistics('control_', env, simulation_reference)
 
     # The Method should not detect any error: false positive testing
     env = ErrorModelSimulationEnvironment(parameters, fault_space=infrastructure_fault_space)
     env.run(stop_time)
-    # Todo: write out statistics
+    write_statistics('infrastructure_', env, simulation_reference)
+
+    commit()
