@@ -27,12 +27,12 @@ class Statistics:
 
 class ErrorModelSimulationEnvironment(DistributedModelSimulationEnvironment):
     nodes: List[ErrorNode]
-    full_state_statistics: List[Statistics] = []
+    full_state_statistics: List[Statistics]
     full_state_statistics_active_time_step: Statistics
 
     # Timestamps
     timestamp_faults: List[Tuple[Node, State, int]]
-    timestamp_statistics: List[Statistics] = []
+    timestamp_statistics: List[Statistics]
     timestamp_statistics_active_time_step: Statistics
 
     def __init__(self, parameters: SimulationParameters, fault_space: Set[int] = None):
@@ -41,11 +41,13 @@ class ErrorModelSimulationEnvironment(DistributedModelSimulationEnvironment):
         self.number_of_variables = sum(parameters.number_of_variables_per_node)
 
         self.full_state_errors = set()
+        self.full_state_statistics = []
         self.full_state_statistics_active_time_step = Statistics()
         self.full_state_statistics_active_time_step.time = self.time
 
         # Timestamps
         self.timestamp_faults = []
+        self.timestamp_statistics = []
         self.timestamp_statistics_active_time_step = Statistics()
         self.timestamp_statistics_active_time_step.time = self.time
 
