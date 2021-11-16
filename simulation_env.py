@@ -34,6 +34,8 @@ class SimulationEnvironment:
         self._stop=False
         while self.time < stop_time and not self._stop:
             self.step()
+            print(f"Progress: {int(self.time/stop_time * 100)}%", end="\r")
+        print(f"                  ", end="\r")
 
     def stop(self):
         self._stop=True

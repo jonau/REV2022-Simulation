@@ -87,8 +87,8 @@ def insert_table(table_name: str, cls=None, value=None, reference=None, referenc
     return reference_id
 
 def write_statistics(prefix, env, simulation_reference):
-    #for statistic in env.token_statistics:
-    #    insert_table(prefix+'token_statistics', cls=statistic, reference='simulation', reference_value=simulation_reference)
+    for statistic in env.token_statistics:
+        insert_table(prefix+'token_statistics', cls=statistic, reference='simulation', reference_value=simulation_reference)
     for statistic in env.timestamp_statistics:
         insert_table(prefix+'timestamp_statistics', cls=statistic, reference='simulation', reference_value=simulation_reference)
     for statistic in env.full_state_statistics:
