@@ -1,7 +1,8 @@
 from simulation_objects import RuleFunction, RuleFunctionElement, State
-from base_model import SimulationParameters
+from distributed_model import DistributedSimulationParameters
 from error_model import Statistics
 from datetime import datetime
+from delay_functions import DelayTypes
 
 import sqlite3
 import sys
@@ -24,6 +25,8 @@ def create_table(table_name: str, cls=None, type=None, reference=None,):
             fields.append((field_name, 'INTEGER'))
         elif type == State:
             fields.append((field_name, 'INTEGER'))
+        elif type == DelayTypes:
+            fields.append((field_name, 'TEXT'))
         elif type == RuleFunction:
             create_table(sub_table_name+'_elements', type=int, reference=table_name)
         elif hasattr(type, '_name') and type._name == 'List':
@@ -58,6 +61,8 @@ def insert_table(table_name: str, cls=None, value=None, reference=None, referenc
             fields.append((field_name, value))
         elif value.__class__ == State:
             fields.append((field_name, value.int_representation))
+        elif value.__class__ == DelayTypes:
+            fields.append((field_name, value.name))
         elif value.__class__ == RuleFunctionElement:
             fields.append((field_name, value.int_representation))
         elif value.__class__ == RuleFunction:
@@ -102,7 +107,7 @@ if len(sys.argv)>=2:
     database_name=sys.argv[1]
 con = sqlite3.connect(database_name)
 
-create_table('simulation', cls=SimulationParameters)
+create_table('simulation', cls=DistributedSimulationParameters)
 create_table('control_full_state_statistics', cls=Statistics, reference='simulation')
 create_table('control_timestamp_statistics', cls=Statistics, reference='simulation')
 create_table('control_token_statistics', cls=Statistics, reference='simulation')

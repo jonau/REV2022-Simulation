@@ -77,7 +77,8 @@ class BaseModelSimulationEnvironment(SimulationEnvironment):
         """
         Will be called for every event.
         """
-        self.nodes[event.to_node].local_state[event.changed_variable[0]] = event.changed_variable[1]
+        if event.changed_variable != None:
+            self.nodes[event.to_node].local_state[event.changed_variable[0]] = event.changed_variable[1]
 
     def handle_time_step(self, time: int, events_occured: bool):
         """

@@ -1,11 +1,19 @@
+from dataclasses import dataclass
 from base_model import BaseModelSimulationEnvironment, Event, SimulationParameters
 import random
-from delay_functions import DelayTypes, delay_exponential_distribution, delay_normal_distribution, delay_square_wave, delay_triangle_wave, delay_uniform_distribution
+from delay_functions import DelayGenerator, DelayTypes
 
+@dataclass
 class DistributedSimulationParameters(SimulationParameters):
     min_delay: int
     max_delay: int
     delay_type: DelayTypes
+    seed: int
+
+class Statistics:
+    time: int = 0
+    error_detected: bool = False
+    band_width_used: int = 0
 
 class DistributedModelSimulationEnvironment(BaseModelSimulationEnvironment):
     def __init__(self, parameters: DistributedSimulationParameters):
@@ -25,6 +33,11 @@ class DistributedModelSimulationEnvironment(BaseModelSimulationEnvironment):
             self.max_delay = parameters.max_delay
         else:
             self.max_delay = 10
+            
+        if hasattr(parameters, "seed"):
+            self.delay_generator = DelayGenerator(parameters.seed)
+        else:
+            self.delay_generator = DelayGenerator()
         
         self.last_event = 0
 
@@ -35,17 +48,17 @@ class DistributedModelSimulationEnvironment(BaseModelSimulationEnvironment):
         if sending_node == receiving_node:
             return 1
         elif self.delay_type == DelayTypes.UNIFORM:
-            return delay_uniform_distribution(self.min_delay, self.max_delay)
+            return self.delay_generator.delay_uniform_distribution(self.min_delay, self.max_delay)
         elif self.delay_type == DelayTypes.NORMAL:
-            return delay_normal_distribution(self.min_delay, self.max_delay)
+            return self.delay_generator.delay_normal_distribution(self.min_delay, self.max_delay)
         elif self.delay_type == DelayTypes.EXPONENTIAL:
-            return delay_exponential_distribution(self.min_delay, self.max_delay)
+            return self.delay_generator.delay_exponential_distribution(self.min_delay, self.max_delay)
         elif self.delay_type == DelayTypes.SQUARE:
-            return delay_square_wave(self.min_delay, self.max_delay, self.time, 10) #TODO: maybe add dynamic parameter for half_period
+            return self.delay_generator.delay_square_wave(self.min_delay, self.max_delay, self.time, 10) #TODO: maybe add dynamic parameter for half_period
         elif self.delay_type == DelayTypes.TRIANGLE_LOW_TO_HIGH:
-            return delay_triangle_wave(self.min_delay, self.max_delay, self.time, 1, True) #TODO: maybe add dynamic parameter for step
+            return self.delay_generator.delay_triangle_wave(self.min_delay, self.max_delay, self.time, 1, True) #TODO: maybe add dynamic parameter for step
         elif self.delay_type == DelayTypes.TRIANGLE_HIGH_TO_LOW:
-            return delay_triangle_wave(self.min_delay, self.max_delay, self.time, 1, False) #TODO: maybe add dynamic parameter for step
+            return self.delay_generator.delay_triangle_wave(self.min_delay, self.max_delay, self.time, 1, False) #TODO: maybe add dynamic parameter for step
 
     def handle_event(self, time: int, event: Event):
         """
