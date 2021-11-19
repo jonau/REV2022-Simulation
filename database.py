@@ -1,5 +1,5 @@
 from simulation_objects import RuleFunction, RuleFunctionElement, State
-from distributed_model import DistributedSimulationParameters
+from base_model import SimulationParameters
 from error_model import Statistics
 from datetime import datetime
 from delay_functions import DelayTypes
@@ -107,7 +107,7 @@ if len(sys.argv)>=2:
     database_name=sys.argv[1]
 con = sqlite3.connect(database_name)
 
-create_table('simulation', cls=DistributedSimulationParameters)
+create_table('simulation', cls=SimulationParameters)
 create_table('control_full_state_statistics', cls=Statistics, reference='simulation')
 create_table('control_timestamp_statistics', cls=Statistics, reference='simulation')
 create_table('control_token_statistics', cls=Statistics, reference='simulation')

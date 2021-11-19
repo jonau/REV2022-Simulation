@@ -25,7 +25,8 @@ class SimulationEnvironment:
         self.time += 1
         while len(self.event_list) and self.event_list[0][0]==self.time:
             _, event = self.event_list.pop(0)
-            self.events_occured=True
+            if not event.changed_variable == None:
+                self.events_occured=True
             self.handle_event(self.time, event)
         self.handle_time_step(self.time, self.events_occured)
         self.events_occured=False
@@ -34,8 +35,6 @@ class SimulationEnvironment:
         self._stop=False
         while self.time < stop_time and not self._stop:
             self.step()
-            print(f"Progress: {int(self.time/stop_time * 100)}%", end="\r")
-        print(f"                  ", end="\r")
 
     def stop(self):
         self._stop=True

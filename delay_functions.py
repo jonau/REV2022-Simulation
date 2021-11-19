@@ -25,6 +25,7 @@ class DelayTypes(Enum):
         if random == 5:
             return DelayTypes.TRIANGLE_HIGH_TO_LOW
 
+#TODO: maybe add jitter for square and triangle wave
 class DelayGenerator():
     rng: Generator
 

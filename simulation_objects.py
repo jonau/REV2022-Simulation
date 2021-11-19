@@ -113,6 +113,8 @@ class Node:
         self.local_state = initial_state
         self.global_state_offset = global_state_offset
         self.number_of_variables = len(rule_function.elements)
+        self.state_history = [(initial_state.int_representation, 0)]
+        self.reached_states = set([initial_state.int_representation])
 
     def evaluate_rule(self) -> SubState:
         return SubState(self.rule_function.evaluate(self.local_state), offset=self.global_state_offset)
