@@ -16,6 +16,7 @@ class ParameterCategories(Enum):
 class SimulationParameters:
     number_of_nodes: int
     number_of_variables_per_node: List[int]
+    number_of_dependencies_per_node: List[int]
     rule_functions_per_node: List[RuleFunction]
     initial_state: int
     min_delay: int

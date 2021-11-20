@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 import itertools
 import random
+from signal import SIGINT, signal
 from database import commit, insert_table, write_statistics
 from delay_functions import DelayTypes
 from error_model import ErrorSimulationModel, Statistics
@@ -48,7 +49,7 @@ def get_random_parameters(max_number_of_nodes: int, max_number_of_variables_per_
 
     delay_type = DelayTypes.random(random)
 
-    return SimulationParameters(number_of_nodes, number_of_variables_per_node, rule_function_per_node, initial_state, 
+    return SimulationParameters(number_of_nodes, number_of_variables_per_node, number_of_dependencies_per_node, rule_function_per_node, initial_state, 
                                 20, 100, delay_type, random.randint(0, 1000000), ParameterCategories.UNKNOWN)
 
 def check_for_timeout(env, parameters, lock) -> bool:
@@ -62,7 +63,12 @@ def check_for_timeout(env, parameters, lock) -> bool:
     else:
         return False
 
+def sigint_handler(signum, frame):
+    pass
+
 def start_simulating(database_lock, seed, good_simulations, bad_simulations, faulty_simulations, timed_out_simulations):
+
+    signal(SIGINT, sigint_handler)
 
     # make simulation deterministic by starting with the given seed
     random.seed(seed)

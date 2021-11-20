@@ -42,7 +42,7 @@ def create_table(table_name: str, cls=None, type=None, reference=None,):
     elif type:
         add_field('value', type, table_name)
 
-    print(f"CREATE TABLE IF NOT EXISTS {table_name} ({','.join([f[0]+' '+f[1] for f in fields])})")
+    # print(f"CREATE TABLE IF NOT EXISTS {table_name} ({','.join([f[0]+' '+f[1] for f in fields])})")
     con.execute(f"CREATE TABLE IF NOT EXISTS {table_name} ({','.join([f[0]+' '+f[1] for f in fields])})")
 
 def insert_table(table_name: str, cls=None, value=None, reference=None, reference_value=None):

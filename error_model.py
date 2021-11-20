@@ -263,8 +263,8 @@ class ErrorSimulationModel(DistributedModelSimulationEnvironment):
         self.timestamp_statistics_active_time_step = Statistics()
 
         self.token_statistics_active_time_step.time = time
-        # variables + token faults (id, received_from list)
-        self.token_statistics_active_time_step.memory_used = self.number_of_variables
+        # variables + next token id + token faults (id, received_from list)
+        self.token_statistics_active_time_step.memory_used = self.number_of_variables + 32
         self.token_statistics_active_time_step.memory_used += (32 + len(self.nodes)) * len(error_node.token_faults)
         self.token_statistics.append(self.token_statistics_active_time_step)
         self.token_statistics_active_time_step = Statistics()

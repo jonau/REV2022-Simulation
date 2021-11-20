@@ -16,7 +16,15 @@ class SimulationProcess:
     faulty_simulation_count: Value
     timed_out_simulation_count: Value
 
+
+stopped = False
+def sigint_handler(signum, frame):
+        global stopped 
+        stopped = True
+
 if __name__ == "__main__":
+    signal.signal(signal.SIGBREAK, sigint_handler)
+    signal.signal(signal.SIGINT, sigint_handler)
     simulation_process_count = input(f"\nEnter the desired amount of Processes (max {cpu_count()}): ")
     if not simulation_process_count.isnumeric():
         print(simulation_process_count, "is not a number")
@@ -28,13 +36,6 @@ if __name__ == "__main__":
     simulation_processes: List[SimulationProcess] = []
     process_manager = Manager()
     database_lock = process_manager.Lock()
-    stopped = False
-
-    def sigint_handler(signum, frame):
-        global stopped 
-        stopped = True
-            
-    signal.signal(signal.SIGINT, sigint_handler)
 
     for i in range(simulation_process_count):
         simulation_process = SimulationProcess()
