@@ -1,9 +1,6 @@
-from typing import Generator
 import numpy as np
 from scipy.stats import skewnorm
 from enum import Enum
-
-from scipy.stats.stats import skewtest
 
 class DelayTypes(Enum):
     UNIFORM = 0
@@ -31,7 +28,6 @@ class DelayTypes(Enum):
         if random == 6:
             return DelayTypes.SKEWED_NORMAL
 
-#TODO: maybe add jitter for square and triangle wave
 class DelayGenerator():
     rng: np.random.Generator
 
@@ -57,23 +53,23 @@ class DelayGenerator():
         """
         return int(min(max_delay, min_delay + self.rng.exponential(scale=10.0)))
 
-    def delay_square_wave(self, min_delay, max_delay, time, half_period) -> int:
+    def delay_square_wave(self, min_delay, max_delay, max_jitter, time, half_period) -> int:
         """
         returns a delay following a square wave
         """
         low = (time // half_period + 1) % 2
         high = (time // half_period) % 2
-        return low * min_delay + high * max_delay
+        return low * (min_delay+max_jitter) + high * (max_delay-max_jitter) + self.rng.integers(-max_jitter, max_jitter)
 
-    def delay_triangle_wave(self, min_delay, max_delay, time, step, direction=True) -> int:
+    def delay_triangle_wave(self, min_delay, max_delay, max_jitter, time, step, direction=True) -> int:
         """
         returns a delay following a triangle wave. If direction is set to True the wave goes from low to high.
         If direction is set to False the wave goes from high to low.
         """
         if (direction):
-            return min(max_delay, min_delay + step * (time % np.ceil(((max_delay - min_delay)/step + 1)))) 
+            return min(max_delay, min_delay + step * (time % np.ceil(((max_delay - min_delay)/step + 1))) + self.rng.integers(-max_jitter, max_jitter)) 
         else:
-            return max(min_delay, max_delay - step * (time % np.ceil(((max_delay - min_delay)/step + 1)))) 
+            return max(min_delay, max_delay - step * (time % np.ceil(((max_delay - min_delay)/step + 1))) + self.rng.integers(-max_jitter, max_jitter)) 
     def delay_skewed_normal_distribution(self, min_delay, max_delay):
         """
         returns a normal distributed delay between min_delay and max_delay

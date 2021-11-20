@@ -4,6 +4,7 @@ from error_model import Statistics
 from datetime import datetime
 from delay_functions import DelayTypes
 
+import typing
 import sqlite3
 import sys
 
@@ -31,7 +32,7 @@ def create_table(table_name: str, cls=None, type=None, reference=None,):
             fields.append((field_name, 'TEXT'))
         elif type == RuleFunction:
             create_table(sub_table_name+'_elements', type=int, reference=table_name)
-        elif hasattr(type, '_name') and type._name == 'List':
+        elif hasattr(type, '_name') and type._name == 'List' or hasattr(type, "_gorg") and type._gorg == typing.List:
             create_table(sub_table_name, type=type.__args__[0], reference=table_name)
         else:
             raise ValueError(f'Unknown type {type}')
@@ -106,7 +107,7 @@ def write_statistics(prefix, env, simulation_reference):
 def commit():
     con.commit()
 
-database_name='simulation'+datetime.now().strftime("%Y%m%d%H%M%S")+'.db'
+database_name='simulation'+datetime.now().strftime("%Y%m%d%H%M")+'.db'
 if len(sys.argv)>=2:
     database_name=sys.argv[1]
 con = sqlite3.connect(database_name)

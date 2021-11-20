@@ -47,13 +47,13 @@ class DistributedModelSimulationEnvironment(BaseModelSimulationEnvironment):
         elif self.delay_type == DelayTypes.EXPONENTIAL:
             return delay_generator.delay_exponential_distribution(self.min_delay, self.max_delay)
         elif self.delay_type == DelayTypes.SQUARE:
-            return delay_generator.delay_square_wave(self.min_delay, self.max_delay, self.time, 10) #TODO: maybe add dynamic parameter for half_period
+            return delay_generator.delay_square_wave(self.min_delay, self.max_delay, 5, self.time, 10) #TODO: maybe add dynamic parameter for half_period and jitter
         elif self.delay_type == DelayTypes.TRIANGLE_LOW_TO_HIGH:
-            return delay_generator.delay_triangle_wave(self.min_delay, self.max_delay, self.time, 1, True) #TODO: maybe add dynamic parameter for step
+            return delay_generator.delay_triangle_wave(self.min_delay, self.max_delay, 5, self.time, 1, True) #TODO: maybe add dynamic parameter for step and jitter
         elif self.delay_type == DelayTypes.TRIANGLE_HIGH_TO_LOW:
-            return delay_generator.delay_triangle_wave(self.min_delay, self.max_delay, self.time, 1, False) #TODO: maybe add dynamic parameter for step
+            return delay_generator.delay_triangle_wave(self.min_delay, self.max_delay, 5, self.time, 1, False) #TODO: maybe add dynamic parameter for step and jitter
         elif self.delay_type == DelayTypes.SKEWED_NORMAL:
-            return delay_generator.delay_normal_distribution(self.min_delay, self.max_delay) #TODO: maybe add dynamic parameter for step
+            return delay_generator.delay_normal_distribution(self.min_delay, self.max_delay) 
 
     def handle_event(self, time: int, event: Event):
         """

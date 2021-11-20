@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 
 min_delay = 20
 max_delay = 100
+max_jitter = 5
 seed = 0
 
 for delay_type in DelayTypes:
@@ -54,19 +55,19 @@ for delay_type in DelayTypes:
         xlabel = "Time"
         ylabel = "Delay"
         for i in range(100):
-            data[i] = delay_generator.delay_square_wave(min_delay, max_delay, i, 10)
+            data[i] = delay_generator.delay_square_wave(min_delay, max_delay, max_jitter, i, 10)
     elif delay_type == DelayTypes.TRIANGLE_LOW_TO_HIGH:
         title = "Triangle Wave Low to High"
         xlabel = "Time"
         ylabel = "Delay"
         for i in range(500):
-            data[i] = delay_generator.delay_triangle_wave(min_delay, max_delay, i, 1, True)
+            data[i] = delay_generator.delay_triangle_wave(min_delay, max_delay, max_jitter, i, 1, True)
     elif delay_type == DelayTypes.TRIANGLE_HIGH_TO_LOW:
         title = "Triangle Wave High to Low"
         xlabel = "Time"
         ylabel = "Delay"
         for i in range(500):
-            data[i] = delay_generator.delay_triangle_wave(min_delay, max_delay, i, 1, False)
+            data[i] = delay_generator.delay_triangle_wave(min_delay, max_delay, max_jitter, i, 1, False)
     elif delay_type == DelayTypes.SKEWED_NORMAL:
         title = "Skewed Normal Distribution"
         xlabel = "Delay"
