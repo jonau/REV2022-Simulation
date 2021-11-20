@@ -22,8 +22,8 @@ if __name__ == "__main__":
         print(simulation_process_count, "is not a number")
         exit(-1)
     else:
-        print(f"\nStarting {max(cpu_count(), int(simulation_process_count))} Simulation Processes\n")
-        simulation_process_count = max(cpu_count(), int(simulation_process_count))
+        print(f"\nStarting {min(cpu_count(), int(simulation_process_count))} Simulation Processes\n")
+        simulation_process_count = min(cpu_count(), int(simulation_process_count))
 
     simulation_processes: List[SimulationProcess] = []
     process_manager = Manager()
