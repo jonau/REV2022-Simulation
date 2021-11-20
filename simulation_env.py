@@ -1,14 +1,17 @@
 from typing import Any, List, Tuple
+import time
 
 class SimulationEnvironment:
     time: int
     events_occured: bool
     event_list: List[Tuple[int, Any]] 
+    timed_out: bool
 
     def __init__(self):
         self.time = 0
         self.events_occured = True
         self.event_list = []
+        self.timed_out = False
     
     def create_event(self, time, event):
         lo = 0
@@ -33,7 +36,12 @@ class SimulationEnvironment:
 
     def run(self, stop_time: int):
         self._stop=False
+        timeout_after = 60 * 10 # set timeout to 10 minutes
+        start_time = time.time()
         while self.time < stop_time and not self._stop:
+            if time.time() - start_time > timeout_after:
+                self.timed_out = True
+                return
             self.step()
 
     def stop(self):

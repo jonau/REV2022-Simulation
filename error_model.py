@@ -2,9 +2,16 @@ from dataclasses import dataclass
 from typing import Dict, List, Set
 from delay_functions import DelayGenerator
 from simulation_objects import Node, State
-from distributed_model import DistributedModelSimulationEnvironment, Statistics
+from distributed_model import DistributedModelSimulationEnvironment
 from base_model import Event, SimulationParameters
+import numpy
 import itertools
+
+class Statistics:
+    time: int = 0
+    error_detected: bool = False
+    band_width_used: int = 0
+    memory_used: int = 0
 
 @dataclass
 class Delay:
@@ -85,13 +92,14 @@ class ErrorSimulationModel(DistributedModelSimulationEnvironment):
         self.timestamp_statistics = []
         self.timestamp_statistics_active_time_step = Statistics()
         self.timestamp_statistics_active_time_step.time = self.time
+        estimated_delay = 1 # set an estimate used for all unknown delays
         for node in self.nodes:
             for i in range(len(self.nodes)):
                 for j in range(len(self.nodes)):
                     if i == j:
                         node.delays.append(Delay(i,j,1)) # constant delay of 1 from a node to itself
                     else:
-                        node.delays.append(Delay(i,j,0)) # could also be an estimate for the delay instead of 0
+                        node.delays.append(Delay(i,j,estimated_delay)) # could also be an estimate for the delay instead of 0
 
         self.token_statistics = []
         self.token_statistics_active_time_step = Statistics()
@@ -178,7 +186,7 @@ class ErrorSimulationModel(DistributedModelSimulationEnvironment):
                             timestamp_event.timestamp = None
                             timestamp_event_delay = self.get_delay(node.id, _node.id, self.special_delay_generator)
                             self.create_event(time + timestamp_event_delay, timestamp_event)
-                            # 2*bits for representing the from_node and to_node and 32 bit for delay
+                            # 2*bits for representing the from_node and to_node and 32 bits for delay
                             self.timestamp_statistics_active_time_step.band_width_used += 32+(len(self.nodes)-1).bit_length()*2
             
 
@@ -207,11 +215,7 @@ class ErrorSimulationModel(DistributedModelSimulationEnvironment):
             error_node.timestamp_faults[i] -= 1
 
         if error_node.local_state.int_representation in self.fault_space:
-            # wait_time = 0
-            # for delay in error_node.delays:
-            #     wait_time += delay.value
-            # wait_time = max(1, wait_time // (len(self.nodes) * len(self.nodes))) * 2 #TODO: check if this calculation is model conform and correct
-            wait_time = max([delay.value for delay in error_node.delays]) * 2
+            wait_time = int(numpy.average([delay.value for delay in error_node.delays])) * len(self.nodes)
             error_node.timestamp_faults.append(wait_time)
             for timestamp_fault in list(error_node.timestamp_faults):
                 if timestamp_fault == 0:
@@ -245,13 +249,22 @@ class ErrorSimulationModel(DistributedModelSimulationEnvironment):
         super().handle_time_step(time, events_occured)
 
         self.full_state_statistics_active_time_step.time = time
+        # variables + full states
+        self.full_state_statistics_active_time_step.memory_used = self.number_of_variables * (len(error_node.full_state) + 1)
         self.full_state_statistics.append(self.full_state_statistics_active_time_step)
         self.full_state_statistics_active_time_step = Statistics()
 
         self.timestamp_statistics_active_time_step.time = time
+        # variables + delays for all connections + timestamp faults
+        self.timestamp_statistics_active_time_step.memory_used = self.number_of_variables 
+        self.timestamp_statistics_active_time_step.memory_used += 32 * len(self.nodes) * len(self.nodes)
+        self.timestamp_statistics_active_time_step.memory_used += 32 * len(error_node.timestamp_faults)
         self.timestamp_statistics.append(self.timestamp_statistics_active_time_step)
         self.timestamp_statistics_active_time_step = Statistics()
 
         self.token_statistics_active_time_step.time = time
+        # variables + token faults (id, received_from list)
+        self.token_statistics_active_time_step.memory_used = self.number_of_variables
+        self.token_statistics_active_time_step.memory_used += (32 + len(self.nodes)) * len(error_node.token_faults)
         self.token_statistics.append(self.token_statistics_active_time_step)
         self.token_statistics_active_time_step = Statistics()

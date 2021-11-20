@@ -3,6 +3,14 @@ from dataclasses import dataclass
 from simulation_objects import Node, RuleFunction, State
 from simulation_env import SimulationEnvironment
 from delay_functions import DelayTypes
+from enum import Enum
+
+class ParameterCategories(Enum):
+    UNKNOWN = 0 # not yet classified
+    GOOD = 1    # resulted in detectable control faults
+    BAD = 2     # contained only hard / impossible to detect control faults
+    FAULTY = 3  # there was a fault during the execution
+    TIMEOUT = 4 # one of the resulting simulations timed out
 
 @dataclass
 class SimulationParameters:
@@ -14,6 +22,7 @@ class SimulationParameters:
     max_delay: int
     delay_type: DelayTypes
     seed: int
+    category: ParameterCategories
 
 class Event:
     from_node: int

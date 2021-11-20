@@ -1,5 +1,5 @@
 from simulation_objects import RuleFunction, RuleFunctionElement, State
-from base_model import SimulationParameters
+from base_model import ParameterCategories, SimulationParameters
 from error_model import Statistics
 from datetime import datetime
 from delay_functions import DelayTypes
@@ -26,6 +26,8 @@ def create_table(table_name: str, cls=None, type=None, reference=None,):
         elif type == State:
             fields.append((field_name, 'INTEGER'))
         elif type == DelayTypes:
+            fields.append((field_name, 'TEXT'))
+        elif type == ParameterCategories:
             fields.append((field_name, 'TEXT'))
         elif type == RuleFunction:
             create_table(sub_table_name+'_elements', type=int, reference=table_name)
@@ -62,6 +64,8 @@ def insert_table(table_name: str, cls=None, value=None, reference=None, referenc
         elif value.__class__ == State:
             fields.append((field_name, value.int_representation))
         elif value.__class__ == DelayTypes:
+            fields.append((field_name, value.name))
+        elif value.__class__ == ParameterCategories:
             fields.append((field_name, value.name))
         elif value.__class__ == RuleFunctionElement:
             fields.append((field_name, value.int_representation))

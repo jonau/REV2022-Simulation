@@ -62,7 +62,9 @@ def evaluate_statistics(db_name):
 
     print(false_negative_rate(control_full_state_statistics))
     print(false_positive_rate(infrastructure_full_state_statistics))
+
     print(false_negative_rate(control_timestamp_statistics))
     print(false_positive_rate(infrastructure_timestamp_statistics))
+    
     print(false_negative_rate(control_token_statistics))
     print(false_positive_rate(infrastructure_token_statistics))
