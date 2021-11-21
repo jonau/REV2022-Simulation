@@ -1,8 +1,7 @@
 from pandas.core.frame import DataFrame
 from delay_functions import DelayGenerator, DelayTypes
 import pandas
-
-import matplotlib.pyplot as plt
+import os
 
 min_delay = 20
 max_delay = 100
@@ -80,6 +79,10 @@ for delay_type in DelayTypes:
         for key in data.keys():
             data[key] = data[key] / 1000
     df = pandas.DataFrame.from_dict(data, orient="index")
-    df.plot(title=title, xlabel=xlabel, ylabel=ylabel, ylim=ylim)
-    plt.show()
-    print(df)
+    plot = df.plot(title=title, xlabel=xlabel, ylabel=ylabel, ylim=ylim)
+    fig = plot.get_figure()
+    if not os.path.exists("figures"):
+        os.mkdir("figures")
+    if not os.path.exists("figures/delays"):
+        os.mkdir("figures/delays")
+    fig.savefig(f"figures/delays/{title}.png")

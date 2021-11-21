@@ -23,7 +23,6 @@ def sigint_handler(signum, frame):
         stopped = True
 
 if __name__ == "__main__":
-    signal.signal(signal.SIGBREAK, sigint_handler)
     signal.signal(signal.SIGINT, sigint_handler)
     simulation_process_count = input(f"\nEnter the desired amount of Processes (max {cpu_count()}): ")
     if not simulation_process_count.isnumeric():

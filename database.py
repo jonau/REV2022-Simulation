@@ -4,6 +4,7 @@ from error_model import Statistics
 from datetime import datetime
 from delay_functions import DelayTypes
 
+import os
 import typing
 import sqlite3
 import sys
@@ -107,7 +108,9 @@ def write_statistics(prefix, env, simulation_reference):
 def commit():
     con.commit()
 
-database_name='simulation'+datetime.now().strftime("%Y%m%d%H%M")+'.db'
+if not os.path.exists("simulations"):
+    os.mkdir("simulations")
+database_name='simulations/simulation'+datetime.now().strftime("%Y%m%d%H%M")+'.db'
 if len(sys.argv)>=2:
     database_name=sys.argv[1]
 con = sqlite3.connect(database_name)
